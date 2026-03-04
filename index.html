@@ -136,11 +136,20 @@
             return 1 - (6 * dSquaredSum) / (n * (Math.pow(n, 2) - 1));
         }
 
+        // FIX 1: Use averaged ranks for tied values, matching scipy.stats.spearmanr.
+        // Previously, ties got sequential ranks (arbitrary order), inflating rho.
         function getRanks(arr) {
             const sorted = arr.map((val, i) => ({ val, i })).sort((a, b) => a.val - b.val);
             const ranks = new Array(arr.length);
-            for (let i = 0; i < sorted.length; i++) {
-                ranks[sorted[i].i] = i + 1;
+            let i = 0;
+            while (i < sorted.length) {
+                let j = i;
+                while (j < sorted.length && sorted[j].val === sorted[i].val) j++;
+                const avgRank = (i + j + 1) / 2; // average of positions i+1 .. j (1-indexed)
+                for (let k = i; k < j; k++) {
+                    ranks[sorted[k].i] = avgRank;
+                }
+                i = j;
             }
             return ranks;
         }
@@ -285,9 +294,11 @@
             t.addEventListener('change', (e) => {
                 const wrapper = e.target.closest('.variant-row').querySelector('.model-options-wrapper');
                 wrapper.classList.toggle('hidden', !e.target.checked);
-                if (e.target.checked) {
-                    wrapper.querySelectorAll('input').forEach(i => i.checked = false);
-                }
+                // FIX 2: Always clear checkboxes on any variant toggle change.
+                // Previously only cleared on re-enable, so hiding a group left its
+                // model-cb boxes checked — and querySelectorAll('.model-cb:checked')
+                // picks up hidden elements too, silently inflating selectedModels.
+                wrapper.querySelectorAll('input').forEach(i => i.checked = false);
                 updateChart();
             });
         });
