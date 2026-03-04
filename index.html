@@ -212,9 +212,9 @@
             }
 
             // Update Metric UI
-            document.getElementById('val-accuracy').innerText = selectedModels.length ? accuracy.toFixed(2) : "--";
-            document.getElementById('val-correlation').innerText = selectedModels.length ? rho.toFixed(2) : "--";
-            document.getElementById('val-average').innerText = selectedModels.length ? ((accuracy + rho) / 2).toFixed(2) : "--";
+            document.getElementById('val-accuracy').innerText = selectedModels.length ? accuracy.toFixed(3) : "--";
+            document.getElementById('val-correlation').innerText = selectedModels.length ? rho.toFixed(3) : "--";
+            document.getElementById('val-average').innerText = selectedModels.length ? ((accuracy + rho) / 2).toFixed(3) : "--";
 
             const ctx = document.getElementById('predictionChart').getContext('2d');
             if (chart) chart.destroy();
