@@ -149,9 +149,9 @@ input[type="checkbox"].variant-toggle {
 .chart-container {
     width: 95%;
     height: 320px;
-    border: 1.5px solid var(--primary-blue);
+    /* border: 1.5px solid var(--primary-blue); */
     margin: 40px auto;
-    background-color: white;
+    background-color: #f9f9f9;
 }
 
 /* Metrics Footer */
