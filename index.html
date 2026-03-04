@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SemEval 2026(5) Dashboard by COGNAC</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <div style="font-size:20px; text-align: center; margin-top: 0px; margin-bottom: 25px"><strong><a href="https://nlu-lab.github.io/semeval.html">SemEval-2026 (5)</a></strong> Dashboard by <strong><a href="https://cognac.cs.fiu.edu/">COGNAC</a></strong></div>
+        <!-- Environment Selection -->
+        <div class="toggle-container">
+            <span>Test</span>
+            <label class="switch">
+                <input type="checkbox" id="mode-toggle" checked>
+                <span class="slider"></span>
+            </label>
+            <span>Dev</span>
+        </div>
+
+        <!-- Model Selection UI -->
+        <div class="selection-section">
+            <!-- Baseline Variant -->
+            <div class="variant-row">
+                <div class="row-header">
+                    <input type="checkbox" checked class="variant-toggle" id="toggle-baseline">
+                    <label for="toggle-baseline">Baseline</label>
+                </div>
+                <div class="model-options-wrapper" id="options-baseline">
+                    <div class="model-group">
+                        <label class="chip"><input type="checkbox" class="all-toggle"> All</label>
+                        <span class="brand">Gemini</span>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="base-gemini-2.5-flash"> 2.5-flash</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="base-gemini-2.0-flash"> 2.0-flash</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="base-gemini-2.5-flash-lite"> 2.5-flash-lite</label>
+                        <span class="brand">GPT</span>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="base-gpt-5.1"> 5.1</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="base-gpt-5-mini"> 5-mini</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="base-gpt-5-nano"> 5-nano</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="base-gpt-4o"> 4o</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="base-gpt-4o-mini"> 4o-mini</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="base-gpt-4.1-mini"> 4.1-mini</label>
+                        <span class="brand">Deepseek</span>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="base-deepseek-v3.2"> V3.2</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chain-of-Thought Variant -->
+            <div class="variant-row">
+                <div class="row-header">
+                    <input type="checkbox" checked class="variant-toggle" id="toggle-cot">
+                    <label for="toggle-cot">Chain-of-Thought</label>
+                </div>
+                <div class="model-options-wrapper" id="options-cot">
+                    <div class="model-group">
+                        <label class="chip"><input type="checkbox" class="all-toggle"> All</label>
+                        <span class="brand">Gemini</span>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="cot-gemini-2.5-flash"> 2.5-flash</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="cot-gemini-2.0-flash"> 2.0-flash</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="cot-gemini-2.5-flash-lite"> 2.5-flash-lite</label>
+                        <span class="brand">GPT</span>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="cot-gpt-5.1"> 5.1</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="cot-gpt-5-mini"> 5-mini</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="cot-gpt-5-nano"> 5-nano</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="cot-gpt-4o"> 4o</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="cot-gpt-4o-mini"> 4o-mini</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="cot-gpt-4.1-mini"> 4.1-mini</label>
+                        <span class="brand">Deepseek</span>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="cot-deepseek-v3.2"> V3.2</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparative Variant -->
+            <div class="variant-row">
+                <div class="row-header">
+                    <input type="checkbox" checked class="variant-toggle" id="toggle-comp">
+                    <label for="toggle-comp">Comparative</label>
+                </div>
+                <div class="model-options-wrapper" id="options-comp">
+                    <div class="model-group">
+                        <label class="chip"><input type="checkbox" class="all-toggle"> All</label>
+                        <span class="brand">Gemini</span>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="comp-gemini-2.5-flash"> 2.5-flash</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="comp-gemini-2.0-flash"> 2.0-flash</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="comp-gemini-2.5-flash-lite"> 2.5-flash-lite</label>
+                        <span class="brand">GPT</span>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="comp-gpt-5.1"> 5.1</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="comp-gpt-5-mini"> 5-mini</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="comp-gpt-5-nano"> 5-nano</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="comp-gpt-4o"> 4o</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="comp-gpt-4o-mini"> 4o-mini</label>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="comp-gpt-4.1-mini"> 4.1-mini</label>
+                        <span class="brand">Deepseek</span>
+                        <label class="chip"><input type="checkbox" class="model-cb" value="comp-deepseek-v3.2"> V3.2</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Visualization -->
+        <div class="chart-container">
+            <canvas id="predictionChart"></canvas>
+        </div>
+
+        <!-- Metric Scoreboard -->
+        <div class="metrics">
+            <div class="metric-item"><div class="value" id="val-accuracy">--</div><div class="label">Accuracy</div></div>
+            <div class="metric-item"><div class="value" id="val-correlation">--</div><div class="label">Correlation</div></div>
+            <div class="metric-item"><div class="value" id="val-average">--</div><div class="label">Average</div></div>
+        </div>
+    </div>
+
+    <script>
+        let chart;
+        let csvData = [];
+
+        /**
+         * Calculate Spearman Rank Correlation (Rho)
+         */
+        function getSpearmanRho(arrX, arrY) {
+            if (arrX.length !== arrY.length || arrX.length === 0) return 0;
+            const n = arrX.length;
+            const rankX = getRanks(arrX);
+            const rankY = getRanks(arrY);
+            let dSquaredSum = 0;
+            for (let i = 0; i < n; i++) {
+                dSquaredSum += Math.pow(rankX[i] - rankY[i], 2);
+            }
+            return 1 - (6 * dSquaredSum) / (n * (Math.pow(n, 2) - 1));
+        }
+
+        function getRanks(arr) {
+            const sorted = arr.map((val, i) => ({ val, i })).sort((a, b) => a.val - b.val);
+            const ranks = new Array(arr.length);
+            for (let i = 0; i < sorted.length; i++) {
+                ranks[sorted[i].i] = i + 1;
+            }
+            return ranks;
+        }
+
+        /**
+         * Fetch and Parse CSV Data
+         */
+        async function loadData() {
+            const isDev = document.getElementById('mode-toggle').checked;
+            const file = isDev ? 'dev_predictions.csv' : 'test_predictions.csv';
+            
+            Papa.parse(file, {
+                download: true,
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    csvData = results.data.filter(row => row.id !== undefined && row.id !== null);
+                    csvData.sort((a, b) => a.mean - b.mean);
+                    updateChart();
+                },
+                error: (err) => {
+                    console.error("Failed to load CSV. Ensure files are in the root directory.", err);
+                }
+            });
+        }
+
+        /**
+         * Render Chart and Calculate Metrics
+         */
+        function updateChart() {
+            if (!csvData.length) return;
+
+            const ids = csvData.map(d => d.id);
+            const meanVals = csvData.map(d => d.mean);
+            const stdevVals = csvData.map(d => d.stdev);
+
+            const upperBand = meanVals.map((m, i) => m + stdevVals[i]);
+            const lowerBand = meanVals.map((m, i) => m - stdevVals[i]);
+
+            const selectedModels = Array.from(document.querySelectorAll('.model-cb:checked')).map(cb => cb.value);
+            
+            let selectionAvg = null;
+            let accuracy = 0;
+            let rho = 0;
+
+            if (selectedModels.length > 0) {
+                // Row-wise average of selected model columns
+                selectionAvg = csvData.map(row => {
+                    const validScores = selectedModels.map(m => row[m]).filter(v => typeof v === 'number');
+                    return validScores.length ? validScores.reduce((a, b) => a + b, 0) / validScores.length : null;
+                });
+
+                // Calculate Statistical Metrics
+                const validPairs = csvData.map((row, i) => ({ pred: selectionAvg[i], target: row.mean, sd: row.stdev }))
+                                          .filter(p => p.pred !== null);
+                
+                if (validPairs.length) {
+                    // Match Accuracy scoring script logic: (|pred-target| <= SD) OR (|pred-target| < 1)
+                    const correctCount = validPairs.filter(p => {
+                        const mask1 = (p.pred >= p.target - p.sd) && (p.pred <= p.target + p.sd);
+                        const mask2 = Math.abs(p.pred - p.target) < 1;
+                        return mask1 || mask2;
+                    }).length;
+                    
+                    accuracy = correctCount / validPairs.length;
+                    rho = getSpearmanRho(validPairs.map(p => p.pred), validPairs.map(p => p.target));
+                }
+            }
+
+            // Update Metric UI
+            document.getElementById('val-accuracy').innerText = selectedModels.length ? accuracy.toFixed(2) : "--";
+            document.getElementById('val-correlation').innerText = selectedModels.length ? rho.toFixed(2) : "--";
+            document.getElementById('val-average').innerText = selectedModels.length ? ((accuracy + rho) / 2).toFixed(2) : "--";
+
+            const ctx = document.getElementById('predictionChart').getContext('2d');
+            if (chart) chart.destroy();
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ids,
+                    datasets: [
+                        {
+                            label: 'Baseline Mean',
+                            data: meanVals,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false,
+                            order: 1
+                        },
+                        {
+                            label: 'Stdev Area',
+                            data: upperBand,
+                            borderColor: 'transparent',
+                            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                            pointRadius: 0,
+                            fill: '+1',
+                            order: 3
+                        },
+                        {
+                            label: 'Stdev Lower',
+                            data: lowerBand,
+                            borderColor: 'transparent',
+                            backgroundColor: 'transparent',
+                            pointRadius: 0,
+                            fill: false,
+                            order: 4
+                        },
+                        {
+                            label: 'Selection Avg',
+                            data: selectionAvg,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            spanGaps: true,
+                            hidden: selectedModels.length === 0,
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: true, ticks: { maxTicksLimit: 10 }, title: { display: true, text: 'ID' } },
+                        y: { min: 0, max: 6, title: { display: true, text: 'Score' } }
+                    }
+                }
+            });
+        }
+
+        /**
+         * Interaction Handlers
+         */
+        document.getElementById('mode-toggle').addEventListener('change', loadData);
+        
+        document.querySelectorAll('.variant-toggle').forEach(t => {
+            t.addEventListener('change', (e) => {
+                const wrapper = e.target.closest('.variant-row').querySelector('.model-options-wrapper');
+                wrapper.classList.toggle('hidden', !e.target.checked);
+                if (e.target.checked) {
+                    wrapper.querySelectorAll('input').forEach(i => i.checked = false);
+                }
+                updateChart();
+            });
+        });
+
+        document.querySelectorAll('.all-toggle').forEach(at => {
+            at.addEventListener('change', (e) => {
+                const group = e.target.closest('.model-group');
+                group.querySelectorAll('.model-cb').forEach(cb => cb.checked = e.target.checked);
+                updateChart();
+            });
+        });
+
+        document.querySelectorAll('.model-cb').forEach(cb => {
+            cb.addEventListener('change', () => {
+                const group = cb.closest('.model-group');
+                const allBox = group.querySelector('.all-toggle');
+                const others = group.querySelectorAll('.model-cb');
+                const checked = group.querySelectorAll('.model-cb:checked');
+                allBox.checked = checked.length === others.length;
+                allBox.indeterminate = checked.length > 0 && checked.length < others.length;
+                updateChart();
+            });
+        });
+
+        // Initial Load
+        window.onload = loadData;
+    </script>
+</body>
+</html>
