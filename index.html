@@ -180,7 +180,10 @@
          */
         function updateChart() {
             if (!csvData.length) return;
-
+            
+            const isDev = document.getElementById('mode-toggle').checked;
+            const xAxisLabel = isDev ? "Development data, sorted by mean human rating" : "Test data, sorted by mean human rating";
+            
             const ids = csvData.map(d => d.id);
             const meanVals = csvData.map(d => d.mean);
             const stdevVals = csvData.map(d => d.stdev);
@@ -287,8 +290,8 @@
                         }
                     },
                     scales: {
-                        x: { display: true, ticks: { maxTicksLimit: 10 }, title: { display: true, text: 'ID' } },
-                        y: { min: 0, max: 6, title: { display: true, text: 'Score' } }
+                        x: { display: true, ticks: { maxTicksLimit: 10 }, title: { display: true, text: xAxisLabel } },
+                        y: { min: 0, max: 6, title: { display: true, text: 'Plausibility Rating' } }
                     }
                 }
             });
