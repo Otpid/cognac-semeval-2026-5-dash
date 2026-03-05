@@ -231,7 +231,7 @@
                     labels: ids,
                     datasets: [
                         {
-                            label: 'Baseline Mean',
+                            label: 'Mean Human Score',
                             data: meanVals,
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 2,
@@ -240,7 +240,7 @@
                             order: 1
                         },
                         {
-                            label: 'Stdev Area',
+                            label: '+1 stdev',
                             data: upperBand,
                             borderColor: 'transparent',
                             backgroundColor: 'rgba(255, 99, 132, 0.25)',
@@ -249,7 +249,7 @@
                             order: 3
                         },
                         {
-                            label: 'Stdev Lower',
+                            label: '-1 stdev',
                             data: lowerBand,
                             borderColor: 'transparent',
                             backgroundColor: 'transparent',
@@ -258,7 +258,7 @@
                             order: 4
                         },
                         {
-                            label: 'Selection Avg',
+                            label: 'Ensemble Score',
                             data: selectionAvg,
                             borderColor: 'rgba(54, 162, 235, 1)',
                             backgroundColor: 'rgba(54, 162, 235, 0.8)',
