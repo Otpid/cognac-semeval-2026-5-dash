@@ -136,8 +136,6 @@
             return 1 - (6 * dSquaredSum) / (n * (Math.pow(n, 2) - 1));
         }
 
-        // FIX 1: Use averaged ranks for tied values, matching scipy.stats.spearmanr.
-        // Previously, ties got sequential ranks (arbitrary order), inflating rho.
         function getRanks(arr) {
             const sorted = arr.map((val, i) => ({ val, i })).sort((a, b) => a.val - b.val);
             const ranks = new Array(arr.length);
@@ -145,7 +143,7 @@
             while (i < sorted.length) {
                 let j = i;
                 while (j < sorted.length && sorted[j].val === sorted[i].val) j++;
-                const avgRank = (i + j + 1) / 2; // average of positions i+1 .. j (1-indexed)
+                const avgRank = (i + j + 1) / 2;
                 for (let k = i; k < j; k++) {
                     ranks[sorted[k].i] = avgRank;
                 }
@@ -182,7 +180,10 @@
          */
         function updateChart() {
             if (!csvData.length) return;
-
+            
+            const isDev = document.getElementById('mode-toggle').checked;
+            const xAxisLabel = isDev ? "Development data, sorted by mean human rating" : "Test data, sorted by mean human rating";
+            
             const ids = csvData.map(d => d.id);
             const meanVals = csvData.map(d => d.mean);
             const stdevVals = csvData.map(d => d.stdev);
@@ -197,18 +198,15 @@
             let rho = 0;
 
             if (selectedModels.length > 0) {
-                // Row-wise average of selected model columns
                 selectionAvg = csvData.map(row => {
                     const validScores = selectedModels.map(m => row[m]).filter(v => typeof v === 'number');
                     return validScores.length ? validScores.reduce((a, b) => a + b, 0) / validScores.length : null;
                 });
 
-                // Calculate Statistical Metrics
                 const validPairs = csvData.map((row, i) => ({ pred: selectionAvg[i], target: row.mean, sd: row.stdev }))
                                           .filter(p => p.pred !== null);
                 
                 if (validPairs.length) {
-                    // Match Accuracy scoring script logic: (|pred-target| <= SD) OR (|pred-target| < 1)
                     const correctCount = validPairs.filter(p => {
                         const mask1 = (p.pred >= p.target - p.sd) && (p.pred <= p.target + p.sd);
                         const mask2 = Math.abs(p.pred - p.target) < 1;
@@ -220,7 +218,6 @@
                 }
             }
 
-            // Update Metric UI
             document.getElementById('val-accuracy').innerText = selectedModels.length ? accuracy.toFixed(3) : "--";
             document.getElementById('val-correlation').innerText = selectedModels.length ? rho.toFixed(3) : "--";
             document.getElementById('val-average').innerText = selectedModels.length ? ((accuracy + rho) / 2).toFixed(3) : "--";
@@ -264,8 +261,11 @@
                             label: 'Selection Avg',
                             data: selectionAvg,
                             borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 2,
-                            pointRadius: 0,
+                            backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                            borderWidth: 0,
+                            pointRadius: 3, // Point size for scatter
+                            pointHoverRadius: 5,
+                            showLine: false, // Disables the line connecting points
                             spanGaps: true,
                             hidden: selectedModels.length === 0,
                             order: 2
@@ -276,10 +276,22 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: false,
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) label += context.parsed.y.toFixed(2);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
                     scales: {
-                        x: { display: true, ticks: { maxTicksLimit: 10 }, title: { display: true, text: 'ID' } },
-                        y: { min: 0, max: 6, title: { display: true, text: 'Score' } }
+                        x: { display: true, ticks: { maxTicksLimit: 10 }, title: { display: true, text: xAxisLabel } },
+                        y: { min: 0, max: 6, title: { display: true, text: 'Plausibility Rating' } }
                     }
                 }
             });
@@ -294,10 +306,6 @@
             t.addEventListener('change', (e) => {
                 const wrapper = e.target.closest('.variant-row').querySelector('.model-options-wrapper');
                 wrapper.classList.toggle('hidden', !e.target.checked);
-                // FIX 2: Always clear checkboxes on any variant toggle change.
-                // Previously only cleared on re-enable, so hiding a group left its
-                // model-cb boxes checked — and querySelectorAll('.model-cb:checked')
-                // picks up hidden elements too, silently inflating selectedModels.
                 wrapper.querySelectorAll('input').forEach(i => i.checked = false);
                 updateChart();
             });
