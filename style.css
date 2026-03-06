@@ -150,7 +150,7 @@ input[type="checkbox"].variant-toggle {
     width: 95%;
     height: 320px;
     /* border: 1.5px solid var(--primary-blue); */
-    margin: 40px auto;
+    margin: 20px auto;
     padding: 10px;
     background-color: #f9f9f9;
 }
