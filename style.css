@@ -12,7 +12,7 @@ body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     display: flex;
     justify-content: center;
-    padding: 40px 20px;
+    padding: 15px 10px;
     color: var(--text-main);
     margin: 0;
 }
@@ -168,11 +168,11 @@ input[type="checkbox"].variant-toggle {
 }
 
 .metric-item .value {
-    font-size: 42px;
+    font-size: 30px;
     font-weight: 700;
     color: #444;
     line-height: 1;
-    font-family: 'Arial Black', Gadget, sans-serif;
+    /* font-family: 'Arial Black', Gadget, sans-serif; */
 }
 
 .metric-item .label {
