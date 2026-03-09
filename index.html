@@ -31,6 +31,14 @@
             <span>Dev</span>
         </div>
 
+        <!-- Best Ensemble -->
+        <div class="variant-row">
+            <div class="row-header">
+                <input type="checkbox" class="variant-toggle" id="toggle-best">
+                <label for="toggle-best">Best Ensemble</label>
+            </div>
+        </div>
+
         <!-- Model Selection UI -->
         <div class="selection-section">
             <!-- Baseline Variant -->
@@ -130,6 +138,35 @@
         let chart;
         let csvData = [];
 
+        // --- PREDEFINED LISTS FOR BEST ENSEMBLE ---
+        // Edit these arrays with the specific model values you want for each mode.
+        const bestModelsDev = [
+            "base-gpt-5-mini",
+            "base-deepseek-v3.2",
+            "base-gemini-2.5-flash",
+            "base-gpt-4.1-mini",
+            "cot-gpt-5.1",
+            "cot-gpt-4o",
+            "cot-gpt-4.1-mini",
+            "comp-gpt-5-nano",
+            "comp-deepseek-v3.2",
+            "comp-gpt-5.1"
+        ];
+        const bestModelsTest = [
+            "base-gpt-5-mini",
+            "base-gpt-5.1",
+            "base-deepseek-v3.2",
+            "base-gemini-2.0-flash",
+            "cot-gpt-5-mini",
+            "cot-gpt-5.1",
+            "cot-gpt-4.1-mini",
+            "comp-gpt-5.1",
+            "comp-gpt-5-nano",
+            "comp-deepseek-v3.2",
+            "comp-gpt-4o",
+            "comp-gpt-4o-mini"
+        ];
+
         /**
          * Calculate Spearman Rank Correlation (Rho)
          */
@@ -168,6 +205,9 @@
             const isDev = document.getElementById('mode-toggle').checked;
             const file = isDev ? 'dev_predictions.csv' : 'test_predictions.csv';
             
+            // Per requirement 4: Deactivate Best Ensemble on mode toggle
+            document.getElementById('toggle-best').checked = false;
+
             Papa.parse(file, {
                 download: true,
                 header: true,
@@ -272,9 +312,9 @@
                             borderColor: 'rgba(54, 162, 235, 1)',
                             backgroundColor: 'rgba(54, 162, 235, 0.8)',
                             borderWidth: 0,
-                            pointRadius: 4, // Point size for scatter
+                            pointRadius: 4,
                             pointHoverRadius: 5,
-                            showLine: false, // Disables the line connecting points
+                            showLine: false,
                             spanGaps: true,
                             hidden: selectedModels.length === 0,
                             order: 2
@@ -310,12 +350,67 @@
          * Interaction Handlers
          */
         document.getElementById('mode-toggle').addEventListener('change', loadData);
+
+        // Best Ensemble Handler
+        document.getElementById('toggle-best').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                const isDev = document.getElementById('mode-toggle').checked;
+                const targetList = isDev ? bestModelsDev : bestModelsTest;
+
+                // 1. Deselect everything first
+                document.querySelectorAll('.model-cb').forEach(cb => cb.checked = false);
+                document.querySelectorAll('.all-toggle').forEach(at => {
+                    at.checked = false;
+                    at.indeterminate = false;
+                });
+
+                // 2. Select predefined models
+                targetList.forEach(val => {
+                    const cb = document.querySelector(`.model-cb[value="${val}"]`);
+                    if (cb) {
+                        cb.checked = true;
+                        // Also ensure the parent variant section is open/enabled
+                        const variantRow = cb.closest('.variant-row');
+                        const vToggle = variantRow.querySelector('.variant-toggle');
+                        const wrapper = variantRow.querySelector('.model-options-wrapper');
+                        if (vToggle && !vToggle.checked) {
+                            vToggle.checked = true;
+                            if (wrapper) wrapper.classList.remove('hidden');
+                        }
+                    }
+                });
+
+                // 3. Sync "All" toggles for groups
+                document.querySelectorAll('.model-group').forEach(group => {
+                    const allBox = group.querySelector('.all-toggle');
+                    if (allBox) {
+                        const others = group.querySelectorAll('.model-cb');
+                        const checked = group.querySelectorAll('.model-cb:checked');
+                        allBox.checked = checked.length === others.length;
+                        allBox.indeterminate = checked.length > 0 && checked.length < others.length;
+                    }
+                });
+            } else {
+                // If user unchecks Best Ensemble manually, we keep current models 
+                // but usually clicking it again resets. No specific requirement to clear.
+            }
+            updateChart();
+        });
         
         document.querySelectorAll('.variant-toggle').forEach(t => {
+            // Exclude best ensemble from standard variant toggle behavior (it has no sub-wrapper)
+            if (t.id === 'toggle-best') return;
+
             t.addEventListener('change', (e) => {
                 const wrapper = e.target.closest('.variant-row').querySelector('.model-options-wrapper');
-                wrapper.classList.toggle('hidden', !e.target.checked);
-                wrapper.querySelectorAll('input').forEach(i => i.checked = false);
+                if (wrapper) {
+                    wrapper.classList.toggle('hidden', !e.target.checked);
+                    wrapper.querySelectorAll('input').forEach(i => i.checked = false);
+                }
+                
+                // Requirement 3: Unselect Best Ensemble if a variant toggle changes
+                document.getElementById('toggle-best').checked = false;
+                
                 updateChart();
             });
         });
@@ -324,6 +419,10 @@
             at.addEventListener('change', (e) => {
                 const group = e.target.closest('.model-group');
                 group.querySelectorAll('.model-cb').forEach(cb => cb.checked = e.target.checked);
+                
+                // Requirement 3: Unselect Best Ensemble on manual change
+                document.getElementById('toggle-best').checked = false;
+                
                 updateChart();
             });
         });
@@ -334,8 +433,14 @@
                 const allBox = group.querySelector('.all-toggle');
                 const others = group.querySelectorAll('.model-cb');
                 const checked = group.querySelectorAll('.model-cb:checked');
-                allBox.checked = checked.length === others.length;
-                allBox.indeterminate = checked.length > 0 && checked.length < others.length;
+                if (allBox) {
+                    allBox.checked = checked.length === others.length;
+                    allBox.indeterminate = checked.length > 0 && checked.length < others.length;
+                }
+
+                // Requirement 3: Unselect Best Ensemble on manual change
+                document.getElementById('toggle-best').checked = false;
+
                 updateChart();
             });
         });
